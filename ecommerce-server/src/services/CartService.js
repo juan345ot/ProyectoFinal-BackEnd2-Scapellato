@@ -13,16 +13,18 @@ class CartService {
         const product = await ProductRepository.getById(productId);
 
         if (!product || product.stock < quantity) {
-            throw new Error('Stock insuficiente o producto no encontrado');
+            throw new Error('Product not available in the requested quantity');
         }
 
-        cart.addProduct(product, quantity);
-        product.stock -= quantity;
+        const productInCart = cart.products.find(item => item.productId.toString() === productId);
+        if (productInCart) {
+            productInCart.quantity += quantity;
+        } else {
+            cart.products.push({ productId, quantity });
+        }
 
-        await CartRepository.update(cartId, cart);
-        await ProductRepository.update(productId, product);
-
-        return cart;
+        await ProductRepository.reduceStock(productId, quantity);
+        return await CartRepository.updateCartProducts(cartId, cart.products);
     }
 
     static async purchaseCart(cartId) {
@@ -33,15 +35,13 @@ class CartService {
         for (let item of cart.products) {
             const product = await ProductRepository.getById(item.productId);
             if (product.stock >= item.quantity) {
-                product.stock -= item.quantity;
                 totalAmount += product.price * item.quantity;
-                await ProductRepository.update(product._id, product);
+                await ProductRepository.reduceStock(item.productId, item.quantity);
             } else {
-                unavailableProducts.push(product._id);
+                unavailableProducts.push(item.productId);
             }
         }
 
-        // Crear ticket si hay productos disponibles
         if (totalAmount > 0) {
             const ticket = {
                 code: uuidv4(),
@@ -52,9 +52,8 @@ class CartService {
             await TicketRepository.create(ticket);
         }
 
-        // Actualizar el carrito, eliminando los productos comprados
         cart.products = cart.products.filter(item => unavailableProducts.includes(item.productId));
-        await CartRepository.update(cartId, cart);
+        await CartRepository.updateCartProducts(cartId, cart.products);
 
         return {
             message: 'Compra realizada',

@@ -1,8 +1,8 @@
 import ProductRepository from '../repositories/ProductRepository.js';
 
 class ProductService {
-    static async getAllProducts() {
-        return await ProductRepository.getAll();
+    static async getAllProducts(query = {}, options = {}) {
+        return await ProductRepository.getAll(query, options);
     }
 
     static async getProductById(productId) {
@@ -19,6 +19,14 @@ class ProductService {
 
     static async deleteProduct(productId) {
         return await ProductRepository.delete(productId);
+    }
+
+    static async checkProductStock(productId, quantity) {
+        return await ProductRepository.checkStock(productId, quantity);
+    }
+
+    static async reduceProductStock(productId, quantity) {
+        return await ProductRepository.reduceStock(productId, quantity);
     }
 }
 

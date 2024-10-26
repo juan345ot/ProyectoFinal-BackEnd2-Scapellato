@@ -16,6 +16,10 @@ class CartRepository {
     static async delete(cartId) {
         return await Cart.findByIdAndDelete(cartId);
     }
+
+    static async updateCartProducts(cartId, products) {
+        return await Cart.findByIdAndUpdate(cartId, { products: products }, { new: true });
+    }
 }
 
 export default CartRepository;

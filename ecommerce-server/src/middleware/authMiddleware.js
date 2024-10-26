@@ -1,16 +1,13 @@
-const authMiddleware = (role) => {
-    return (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({ error: 'No autenticado' });
-        }
-
-        if (req.user.role !== role) {
-            return res.status(403).json({ error: 'No autorizado' });
-        }
-
-        next();
-    };
+export const authorizeAdmin = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+    next();
 };
 
-export const isAdmin = authMiddleware('admin');
-export const isUser = authMiddleware('user');
+export const authorizeUser = (req, res, next) => {
+    if (req.user.role !== 'user') {
+        return res.status(403).json({ message: 'Access denied. Users only.' });
+    }
+    next();
+};

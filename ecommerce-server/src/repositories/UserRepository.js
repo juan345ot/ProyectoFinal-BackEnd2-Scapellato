@@ -16,6 +16,10 @@ class UserRepository {
     static async delete(userId) {
         return await User.findByIdAndDelete(userId);
     }
+
+    static async getByEmail(email) {
+        return await User.findOne({ email });
+    }
 }
 
 export default UserRepository;

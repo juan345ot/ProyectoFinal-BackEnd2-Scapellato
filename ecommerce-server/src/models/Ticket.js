@@ -4,21 +4,23 @@ const TicketSchema = new mongoose.Schema({
     code: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     purchase_datetime: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        required: true,
     },
     amount: {
         type: Number,
-        required: true
+        required: true,
     },
     purchaser: {
         type: String,
-        required: true
-    }
+        required: true,
+    },
 });
 
 const Ticket = mongoose.model('Ticket', TicketSchema);
+
 export default Ticket;
