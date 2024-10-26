@@ -20,7 +20,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configurar conexión a MongoDB
+// Configurar conexión a MongoDB con mejores manejos de eventos
 const mongoUri = process.env.MONGO_URI;
 mongoose.connect(mongoUri)
     .then(() => {
@@ -30,11 +30,23 @@ mongoose.connect(mongoUri)
         console.error('Error conectando a la base de datos', error);
     });
 
+mongoose.connection.on('disconnected', () => {
+    console.error('Conexión a MongoDB perdida');
+});
+mongoose.connection.on('reconnected', () => {
+    console.log('Reconexion a MongoDB');
+});
+
 // Configuración de sesiones
 app.use(session({
     secret: process.env.SESSION_SECRET, // Usar una clave separada para las sesiones
     resave: false,
     saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',  // Solo usar cookies seguras en producción
+        httpOnly: true,  // Evitar acceso a las cookies por scripts del lado del cliente
+        maxAge: 1000 * 60 * 60 * 24  // 1 día de expiración para la cookie
+    }
 }));
 
 // Configuración de Passport
@@ -57,7 +69,8 @@ app.engine('handlebars', engine({
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-// Registrar el helper "range" en Handlebars
+// Helpers de Handlebars en un archivo separado (por modularidad)
+// Registrar el helper "range"
 Handlebars.registerHelper('range', function(n, options) {
     let accum = '';
     for (let i = 1; i <= n; ++i) {
@@ -66,17 +79,13 @@ Handlebars.registerHelper('range', function(n, options) {
     return accum;
 });
 
-// Registrar el helper "gt" en Handlebars
+// Registrar el helper "gt"
 Handlebars.registerHelper('gt', function(a, b, options) {
     if (typeof options.inverse !== 'function') {
         options.inverse = () => '';  // Asegurar que haya una función vacía para el bloque "else"
     }
 
-    if (a > b) {
-        return options.fn(this);
-    } else {
-        return options.inverse(this);
-    }
+    return a > b ? options.fn(this) : options.inverse(this);
 });
 
 // Middleware para procesar JSON y formularios
@@ -91,6 +100,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/', viewRoutes);
+
+// Middleware para manejar rutas no encontradas (404)
+app.use((req, res, next) => {
+    res.status(404).render('404', { message: 'Página no encontrada' });
+});
 
 // Manejo de errores
 app.use((err, req, res, next) => {
