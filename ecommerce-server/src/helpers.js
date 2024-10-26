@@ -1,4 +1,4 @@
-const exphbs = require('express-handlebars');
+import exphbs from 'express-handlebars';
 
 const hbs = exphbs.create({
   defaultLayout: 'index', 
@@ -27,4 +27,4 @@ const hbs = exphbs.create({
   }
 });
 
-module.exports = hbs;
+export default hbs;

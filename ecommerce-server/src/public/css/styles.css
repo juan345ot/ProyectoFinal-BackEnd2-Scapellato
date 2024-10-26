@@ -1,13 +1,24 @@
+/* Variables CSS para colores */
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --text-color: #333;
+  --bg-color: #f4f4f4;
+  --white-color: #fff;
+  --border-color: #ddd;
+}
+
+/* Estilos generales */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f4f4f4;
+  background-color: var(--bg-color);
 }
 
 h1, h2 {
   text-align: center;
-  color: #333;
+  color: var(--text-color);
 }
 
 ul {
@@ -19,13 +30,13 @@ ul {
 
 li {
   padding: 10px;
-  background-color: #fff;
+  background-color: var(--white-color);
   margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color);
 }
 
 a {
-  color: #007bff;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -33,19 +44,28 @@ a:hover {
   text-decoration: underline;
 }
 
-button {
-  background-color: #007bff;
-  color: white;
+/* Botones */
+button,
+.pagination-button,
+#cart-link-container a,
+.back-to-home {
+  background-color: var(--primary-color);
+  color: var(--white-color);
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  text-decoration: none;
 }
 
-button:hover {
-  background-color: #0069d9;
+button:hover,
+.pagination-button:hover,
+#cart-link-container a:hover,
+.back-to-home:hover {
+  background-color: var(--primary-hover);
 }
 
+/* Carrito de productos */
 #cart-product-list li {
   display: flex;
   justify-content: space-between;
@@ -57,15 +77,18 @@ button:hover {
   margin-top: 20px;
 }
 
+/* Listado de productos */
 #product-list {
   margin-bottom: 20px;
 }
 
-#add-product-form, #edit-product-form {
+/* Formularios */
+#add-product-form,
+#edit-product-form {
   margin: 20px auto;
   max-width: 500px;
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--white-color);
   border-radius: 5px;
 }
 
@@ -73,12 +96,16 @@ button:hover {
   display: none;
 }
 
-#add-product-form label, #edit-product-form label {
+#add-product-form label,
+#edit-product-form label {
   display: block;
   margin-bottom: 5px;
 }
 
-#add-product-form input, #add-product-form textarea, #edit-product-form input, #edit-product-form textarea {
+#add-product-form input,
+#add-product-form textarea,
+#edit-product-form input,
+#edit-product-form textarea {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
@@ -87,6 +114,7 @@ button:hover {
   box-sizing: border-box;
 }
 
+/* Paginación */
 .pagination {
   display: flex;
   justify-content: center;
@@ -94,50 +122,19 @@ button:hover {
 }
 
 .pagination-button {
-  background-color: #007bff;
-  color: white;
   padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
   margin: 0 5px;
-  text-decoration: none;
-  cursor: pointer;
 }
 
-.pagination-button:hover {
-  background-color: #0069d9;
-}
-
+/* Enlace de carrito */
 #cart-link-container a {
   display: inline-block;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
   margin-top: 10px;
-  text-decoration: none;
-  cursor: pointer;
 }
 
-#cart-link-container a:hover {
-  background-color: #0069d9;
-}
-
+/* Botón volver al inicio */
 .back-to-home {
   display: block;
   margin-top: 20px;
   text-align: center;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  text-decoration: none;
-  cursor: pointer;
 }
-
-.back-to-home:hover {
-  background-color: #0069d9;
-}
-
