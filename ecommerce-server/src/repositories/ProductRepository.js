@@ -2,11 +2,15 @@ import Product from '../models/Product.js';
 
 class ProductRepository {
     static async getAll(query = {}, options = {}) {
-        return await Product.find(query).sort(options.sort).limit(options.limit).skip(options.page * options.limit);
+        const filter = query.category ? { category: query.category } : {};  // Filtrar por categoría si es necesario
+        return await Product.find(filter)
+            .sort({ price: options.sort === 'desc' ? -1 : 1 })  // Ordenar por precio ascendente o descendente
+            .limit(options.limit)
+            .skip(options.page * options.limit);
     }
 
     static async getById(productId) {
-        return await Product.findById(productId);
+        return await Product.findById(productId).lean();  // Utilizar lean() para mejorar la eficiencia en consultas
     }
 
     static async create(productData) {
@@ -21,8 +25,9 @@ class ProductRepository {
         return await Product.findByIdAndDelete(productId);
     }
 
+    // Verificación de stock optimizada
     static async checkStock(productId, quantity) {
-        const product = await Product.findById(productId);
+        const product = await Product.findById(productId).lean();
         return product.stock >= quantity;
     }
 

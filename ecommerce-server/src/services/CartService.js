@@ -31,17 +31,25 @@ class CartService {
         const cart = await CartRepository.getById(cartId);
         let totalAmount = 0;
         const unavailableProducts = [];
-
+    
+        // Verificar stock y calcular el total
         for (let item of cart.products) {
             const product = await ProductRepository.getById(item.productId);
-            if (product.stock >= item.quantity) {
+            if (product && product.stock >= item.quantity) {
                 totalAmount += product.price * item.quantity;
                 await ProductRepository.reduceStock(item.productId, item.quantity);
             } else {
-                unavailableProducts.push(item.productId);
+                unavailableProducts.push({ productId: item.productId, name: product.name });
             }
+         }
+    
+        if (unavailableProducts.length > 0) {
+            return {
+                message: 'Algunos productos no están disponibles',
+                unavailableProducts,
+            };
         }
-
+    
         if (totalAmount > 0) {
             const ticket = {
                 code: uuidv4(),
@@ -51,15 +59,12 @@ class CartService {
             };
             await TicketRepository.create(ticket);
         }
-
-        cart.products = cart.products.filter(item => unavailableProducts.includes(item.productId));
+    
+        cart.products = cart.products.filter(item => !unavailableProducts.some(unp => unp.productId === item.productId));
         await CartRepository.updateCartProducts(cartId, cart.products);
-
-        return {
-            message: 'Compra realizada',
-            unavailableProducts,
-        };
+    
+        return { message: 'Compra realizada con éxito' };
     }
 }
-
+    
 export default CartService;
